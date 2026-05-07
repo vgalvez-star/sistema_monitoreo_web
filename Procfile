@@ -1,0 +1,1 @@
+web: gunicorn sistema_monitoreo_web:app
