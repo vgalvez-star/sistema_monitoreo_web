@@ -1,1 +1,2 @@
-web: gunicorn sistema_monitoreo_web:app
+
+gunicorn aplicacion_web_monitoreo:app
