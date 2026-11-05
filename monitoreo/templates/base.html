@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Monitor{% endblock %} · Sistema de Monitoreo Web</title>
+  <meta name="csrf-token" content="{{ csrf }}">
+  <script>
+    /* Aplica el tema antes de pintar para evitar parpadeos (madrugada/noche = oscuro). */
+    (function () {
+      var h = new Date().getHours(), m = new URLSearchParams(location.search).get("hora");
+      if (m && /^\d{1,2}(:\d{2})?$/.test(m)) h = parseInt(m, 10) % 24;
+      var pref = "auto";
+      try { pref = localStorage.getItem("monitor.tema") || "auto"; } catch (e) {}
+      var tema = pref !== "auto" ? pref : (h < 6 || h >= 20 ? "oscuro" : "claro");
+      document.documentElement.setAttribute("data-tema", tema);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='img/icono.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}?v={{ version }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block clase_body %}{% endblock %}">
+  {% block cuerpo %}{% endblock %}
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/cielo.js') }}?v={{ version }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: sistema-monitoreo-web
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn aplicacion_web_monitoreo:app --workers 2 --threads 4 --timeout 60
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false # se define a mano en el panel de Render
+      - key: TRUST_PROXY
+        value: "1"
+      - key: SESSION_COOKIE_SECURE
+        value: "1"
+      - key: MONITOR_SITES
+        value: https://www.google.com,https://www.github.com
+    # Para conservar el historial entre despliegues, agrega un disco persistente
+    # (plan de pago) y apunta DB_PATH a él, por ejemplo:
+    # disk:
+    #   name: datos
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # y la variable DB_PATH=/var/data/monitor.db

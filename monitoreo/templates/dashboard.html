@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% set activo = 'dashboard' %}
+{% block titulo %}Panel{% endblock %}
+{% block cuerpo %}
+<section class="hero">
+  <div class="cielo" data-cielo aria-hidden="true"></div>
+  {% include "_barra.html" %}
+  <div class="contenedor hero__contenido">
+    <div class="hero__panel">
+      <p class="hero__periodo">
+        <span class="hero__icono" data-periodo-icono></span>
+        <span data-periodo-nombre>—</span>
+        <span class="hero__sep">·</span>
+        <time class="hero__reloj" data-reloj>--:--:--</time>
+      </p>
+      <h1 class="hero__saludo"><span data-saludo>Hola</span>, {{ session.usuario }}</h1>
+      <p class="hero__frase" data-frase></p>
+      <p class="hero__fecha" data-fecha></p>
+    </div>
+    <div class="hero__estado estado-global estado-global--cargando" id="estado-global" aria-live="polite">
+      <span class="estado-global__punto"></span>
+      <span class="estado-global__texto">Cargando estado…</span>
+    </div>
+  </div>
+</section>
+
+<main class="contenedor principal">
+  <section class="kpis" aria-label="Resumen">
+    <article class="kpi">
+      <p class="kpi__etiqueta">Servicios</p>
+      <p class="kpi__valor" id="kpi-total">—</p>
+      <p class="kpi__nota">monitoreados</p>
+    </article>
+    <article class="kpi kpi--ok">
+      <p class="kpi__etiqueta">Operativos</p>
+      <p class="kpi__valor" id="kpi-ok">—</p>
+      <p class="kpi__nota" id="kpi-ok-nota">respondiendo bien</p>
+    </article>
+    <article class="kpi kpi--error">
+      <p class="kpi__etiqueta">Incidencias</p>
+      <p class="kpi__valor" id="kpi-incidencias">—</p>
+      <p class="kpi__nota" id="kpi-incidencias-nota">caídos o lentos</p>
+    </article>
+    <article class="kpi">
+      <p class="kpi__etiqueta">Latencia media</p>
+      <p class="kpi__valor" id="kpi-latencia">—</p>
+      <p class="kpi__nota">último chequeo</p>
+    </article>
+    <article class="kpi">
+      <p class="kpi__etiqueta">Disponibilidad</p>
+      <p class="kpi__valor" id="kpi-uptime">—</p>
+      <p class="kpi__nota">promedio 24 h</p>
+    </article>
+  </section>
+
+  <section class="seccion">
+    <div class="seccion__cabecera">
+      <div>
+        <h2>Servicios</h2>
+        <p class="seccion__sub">Chequeo cada {{ intervalo }} s · lento sobre {{ umbral_lento }} ms · <span id="actualizado">sin datos aún</span></p>
+      </div>
+      <button class="boton boton--primario" type="button" data-abrir-dialogo>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        Agregar sitio
+      </button>
+    </div>
+    <div class="sitios" id="sitios">
+      {% for _ in range(3) %}<div class="tarjeta tarjeta--esqueleto"></div>{% endfor %}
+    </div>
+  </section>
+
+  <section class="seccion rejilla-2">
+    <article class="panel">
+      <header class="panel__cabecera">
+        <div>
+          <h2>Tiempo de respuesta</h2>
+          <p class="seccion__sub">Últimos 120 chequeos · hora local · <span class="leyenda-umbral">umbral lento</span></p>
+        </div>
+        <label class="selector">
+          <span class="sr-only">Sitio</span>
+          <select id="selector-sitio"></select>
+        </label>
+      </header>
+      <div class="grafico" id="grafico" data-umbral="{{ umbral_lento }}">
+        <svg class="grafico__svg" id="grafico-svg" role="img" aria-label="Gráfico de tiempo de respuesta"></svg>
+        <div class="grafico__tooltip" id="grafico-tooltip" hidden></div>
+        <p class="grafico__vacio" id="grafico-vacio" hidden>Aún no hay mediciones para este sitio.</p>
+      </div>
+      <div class="grafico__stats" id="grafico-stats"></div>
+    </article>
+
+    <article class="panel">
+      <header class="panel__cabecera">
+        <div>
+          <h2>Eventos recientes</h2>
+          <p class="seccion__sub">Últimos chequeos registrados</p>
+        </div>
+        <a class="enlace" href="{{ url_for('web.ver_historial') }}">Ver todo →</a>
+      </header>
+      <ol class="eventos" id="eventos"></ol>
+    </article>
+  </section>
+</main>
+
+<footer class="contenedor pie">
+  <span>Sistema de Monitoreo Web v{{ version }}</span>
+  <span>Horarios mostrados en la hora local de tu equipo</span>
+</footer>
+
+<dialog class="dialogo" id="dialogo-sitio" aria-labelledby="dialogo-titulo">
+  <form class="dialogo__form" id="form-sitio" method="dialog" novalidate>
+    <h2 id="dialogo-titulo">Agregar sitio</h2>
+    <p class="seccion__sub">Se empezará a chequear en el próximo ciclo.</p>
+    <label class="campo">
+      <span>URL</span>
+      <input name="url" type="text" inputmode="url" placeholder="https://www.ejemplo.cl" required autocomplete="off">
+    </label>
+    <label class="campo">
+      <span>Nombre <small>(opcional)</small></span>
+      <input name="nombre" type="text" maxlength="80" placeholder="Sitio corporativo" autocomplete="off">
+    </label>
+    <p class="campo__error" id="form-error" hidden></p>
+    <div class="dialogo__acciones">
+      <button class="boton" type="button" data-cerrar-dialogo>Cancelar</button>
+      <button class="boton boton--primario" type="submit">Agregar</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}?v={{ version }}" defer></script>
+{% endblock %}
