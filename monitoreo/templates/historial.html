@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% set activo = 'historial' %}
+{% block titulo %}Historial{% endblock %}
+{% block cuerpo %}
+<section class="hero hero--compacto">
+  <div class="cielo" data-cielo aria-hidden="true"></div>
+  {% include "_barra.html" %}
+  <div class="contenedor hero__contenido">
+    <div class="hero__panel">
+      <p class="hero__periodo">
+        <span class="hero__icono" data-periodo-icono></span>
+        <span data-periodo-nombre>—</span>
+        <span class="hero__sep">·</span>
+        <time class="hero__reloj" data-reloj>--:--:--</time>
+      </p>
+      <h1 class="hero__saludo hero__saludo--chico">Historial de chequeos</h1>
+      <p class="hero__frase">{{ total }} registro{{ '' if total == 1 else 's' }} · se conservan los últimos días configurados</p>
+    </div>
+  </div>
+</section>
+
+<main class="contenedor principal principal--sin-solape">
+  <article class="panel">
+    <form class="filtros" method="get">
+      <label class="selector">
+        <span>Sitio</span>
+        <select name="sitio" onchange="this.form.submit()">
+          <option value="">Todos</option>
+          {% for s in sitios %}
+            <option value="{{ s.id }}" {% if s.id == sitio_id %}selected{% endif %}>{{ s.nombre }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="selector">
+        <span>Estado</span>
+        <select name="estado" onchange="this.form.submit()">
+          <option value="">Todos</option>
+          {% for e in ['OK', 'LENTO', 'ERROR'] %}
+            <option value="{{ e }}" {% if e == estado %}selected{% endif %}>{{ e|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <noscript><button class="boton" type="submit">Filtrar</button></noscript>
+    </form>
+
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr><th>Fecha y hora</th><th>Sitio</th><th>Estado</th><th class="num">HTTP</th><th class="num">Tiempo</th><th>Detalle</th></tr>
+        </thead>
+        <tbody>
+          {% for f in filas %}
+          <tr>
+            <td><time data-utc="{{ f.fecha }}">{{ f.fecha }}</time></td>
+            <td><strong>{{ f.nombre }}</strong><span class="tabla__url">{{ f.url }}</span></td>
+            <td><span class="insignia insignia--{{ f.estado|lower }}">{{ f.estado }}</span></td>
+            <td class="num">{{ f.codigo_http or '—' }}</td>
+            <td class="num">{{ '%.0f ms'|format(f.tiempo_ms) if f.tiempo_ms is not none else '—' }}</td>
+            <td class="tabla__detalle">{{ f.error or '' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="tabla__vacia">No hay registros con estos filtros.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if paginas > 1 %}
+    <nav class="paginacion" aria-label="Paginación">
+      {% set base = {'sitio': sitio_id or '', 'estado': estado or ''} %}
+      {% if pagina > 1 %}<a class="boton" href="{{ url_for('web.ver_historial', pagina=pagina-1, **base) }}">← Anterior</a>{% else %}<span></span>{% endif %}
+      <span>Página {{ pagina }} de {{ paginas }}</span>
+      {% if pagina < paginas %}<a class="boton" href="{{ url_for('web.ver_historial', pagina=pagina+1, **base) }}">Siguiente →</a>{% else %}<span></span>{% endif %}
+    </nav>
+    {% endif %}
+  </article>
+</main>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.querySelectorAll("time[data-utc]").forEach(function (el) {
+    var d = new Date(el.dataset.utc);
+    if (!isNaN(d)) el.textContent = d.toLocaleString("es-CL", { dateStyle: "short", timeStyle: "medium", hourCycle: "h23" });
+  });
+</script>
+{% endblock %}

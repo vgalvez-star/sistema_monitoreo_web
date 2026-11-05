@@ -1,0 +1,32 @@
+<header class="barra">
+  <div class="contenedor barra__fila">
+    <a class="marca" href="{{ url_for('web.dashboard') }}">
+      <svg class="marca__logo" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="currentColor" opacity=".16"/>
+        <path d="M5 17h5l2.6-6 4.2 12 3-8.5 1.9 2.5H27" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="marca__texto"><strong>MonitorWeb</strong><small>Sistema de monitoreo</small></span>
+    </a>
+    <nav class="navegacion" aria-label="Principal">
+      <a href="{{ url_for('web.dashboard') }}" {% if activo == 'dashboard' %}aria-current="page"{% endif %}>Panel</a>
+      <a href="{{ url_for('web.ver_historial') }}" {% if activo == 'historial' %}aria-current="page"{% endif %}>Historial</a>
+    </nav>
+    <div class="barra__acciones">
+      <button class="boton-vidrio" type="button" data-boton-tema title="Cambiar tema">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9A7 7 0 0 1 12 3Z" fill="currentColor"/></svg>
+        <span data-tema-etiqueta>Auto</span>
+      </button>
+      <span class="usuario" title="Sesión iniciada">
+        <span class="usuario__avatar">{{ session.usuario[:1]|upper }}</span>
+        <span class="usuario__nombre">{{ session.usuario }}</span>
+      </span>
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf }}">
+        <button class="boton-vidrio" type="submit" title="Cerrar sesión">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="solo-escritorio">Salir</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</header>

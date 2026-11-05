@@ -1,3 +1,20 @@
-monitor.db
+# Datos generados en ejecución (nunca van al repositorio)
+*.db
+*.db-wal
+*.db-shm
+*.db.lock
+monitoreo_db
 log.txt
+*.log
+data/
+
+# Secretos generados automáticamente
+.secret_key
+.env
+
+# Python
 __pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/

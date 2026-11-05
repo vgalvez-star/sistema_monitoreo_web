@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block clase_body %}pagina-login{% endblock %}
+{% block cuerpo %}
+<div class="cielo cielo--completo" data-cielo aria-hidden="true"></div>
+<main class="login">
+  <div class="login__tarjeta">
+    <div class="login__marca">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M5 17h5l2.6-6 4.2 12 3-8.5 1.9 2.5H27" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      MonitorWeb
+    </div>
+    <p class="hero__periodo">
+      <span class="hero__icono" data-periodo-icono></span>
+      <span data-periodo-nombre>—</span>
+      <span class="hero__sep">·</span>
+      <time class="hero__reloj" data-reloj>--:--</time>
+    </p>
+    <h1 class="login__saludo"><span data-saludo>Bienvenido</span></h1>
+    <p class="login__frase" data-frase-login></p>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+      {% for categoria, mensaje in mensajes %}
+        <p class="alerta alerta--{{ categoria }}" role="alert">{{ mensaje }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="post" class="login__form">
+      <input type="hidden" name="csrf_token" value="{{ csrf }}">
+      <label class="campo campo--vidrio">
+        <span>Usuario</span>
+        <input name="username" value="{{ usuario or '' }}" autocomplete="username" required autofocus>
+      </label>
+      <label class="campo campo--vidrio">
+        <span>Contraseña</span>
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="boton boton--primario boton--ancho" type="submit">Entrar al panel</button>
+    </form>
+    <p class="login__pie">Acceso restringido · v{{ version }}</p>
+  </div>
+</main>
+{% endblock %}
