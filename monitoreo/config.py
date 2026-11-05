@@ -50,7 +50,7 @@ def _secreto_persistente(ruta, generar, descripcion):
     valor = generar()
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         f.write(valor)
-    log.warning("Se generó %s y se guardó en %s", descripcion, ruta)
+    log.info("Se generó %s y se guardó en %s", descripcion, ruta)
     return valor, True
 
 

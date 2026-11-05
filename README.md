@@ -22,20 +22,29 @@ Panel en Flask que chequea la disponibilidad y el tiempo de respuesta de sitios 
 
 ## Ejecutar en local
 
-```bash
-python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+### Forma rápida (doble clic)
 
-python aplicacion_web_monitoreo.py
-```
+1. Instala [Python 3](https://www.python.org/downloads/). En Windows, marca **Add Python to PATH** durante la instalación.
+2. Descarga el proyecto como ZIP (botón verde **Code → Download ZIP**) y descomprímelo.
+3. Abre **`iniciar.bat`** con doble clic (en macOS/Linux: `./iniciar.sh`).
 
-Abre <http://127.0.0.1:5000> e ingresa con:
+La primera vez tarda un poco más porque prepara el entorno. Después se abre el navegador en <http://127.0.0.1:5000>. Ingresa con:
 
 - **Usuario:** `admin`
 - **Contraseña:** `admin123`
 
-Para cambiarlas sin tocar el código, define las variables `ADMIN_USER` y `ADMIN_PASSWORD` (en Windows PowerShell: `$env:ADMIN_PASSWORD="otra-clave"`).
+Para detenerlo, cierra la ventana negra o presiona `Ctrl+C` en ella.
+
+### Forma manual
+
+```bash
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python aplicacion_web_monitoreo.py --abrir
+```
+
+Para cambiar las credenciales sin tocar el código, define las variables `ADMIN_USER` y `ADMIN_PASSWORD` (en Windows PowerShell: `$env:ADMIN_PASSWORD="otra-clave"`).
 
 ## Despliegue en Render
 
@@ -85,6 +94,7 @@ Todas las rutas `/api/*` requieren sesión iniciada. Las que modifican datos req
 
 ```
 aplicacion_web_monitoreo.py   punto de entrada (gunicorn / python)
+iniciar.bat / iniciar.sh      inicio con doble clic (Windows / macOS-Linux)
 monitoreo/
   __init__.py                 fábrica de la aplicación
   config.py                   configuración desde variables de entorno
