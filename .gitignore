@@ -10,7 +10,6 @@ data/
 
 # Secretos generados automáticamente
 .secret_key
-.admin_password
 .env
 
 # Python

@@ -191,3 +191,13 @@ def test_un_solo_monitor_por_base_de_datos(app):
         finally:
             a.detener()
             b.detener()
+
+
+def test_credenciales_por_defecto_admin_admin123(tmp_path, monkeypatch):
+    monkeypatch.delenv("ADMIN_USER", raising=False)
+    monkeypatch.delenv("ADMIN_PASSWORD", raising=False)
+    app = create_app({"DB_PATH": str(tmp_path / "d.db"), "MONITOR_ACTIVO": False})
+    cliente = app.test_client()
+    token = csrf_de(cliente.get("/login").get_data(as_text=True))
+    r = cliente.post("/login", data={"username": "admin", "password": "admin123", "csrf_token": token})
+    assert r.status_code == 302 and cliente.get("/").status_code == 200

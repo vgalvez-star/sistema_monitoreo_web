@@ -11,7 +11,7 @@ services:
       - key: ADMIN_USER
         value: admin
       - key: ADMIN_PASSWORD
-        sync: false # se define a mano en el panel de Render
+        value: admin123
       - key: TRUST_PROXY
         value: "1"
       - key: SESSION_COOKIE_SECURE

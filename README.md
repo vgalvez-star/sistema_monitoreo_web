@@ -18,7 +18,7 @@ Panel en Flask que chequea la disponibilidad y el tiempo de respuesta de sitios 
   Para probarlo sin esperar: `/?hora=22:30` fija la hora y `/?demo=1` recorre el día completo en unos 48 s. El botón **Auto / Claro / Oscuro** permite fijar un tema.
 - **Gestión de sitios** desde la web: agregar y eliminar sin tocar el código.
 - **Historial** paginado y filtrable por sitio y estado.
-- **Seguridad**: login con sesión, contraseña desde variables de entorno (guardada como hash), protección CSRF, bloqueo temporal tras 5 intentos fallidos y redirecciones solo internas.
+- **Seguridad**: login con sesión (contraseña guardada como hash en memoria), protección CSRF, bloqueo temporal tras 5 intentos fallidos y redirecciones solo internas.
 
 ## Ejecutar en local
 
@@ -27,11 +27,15 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-export ADMIN_PASSWORD="una-clave-segura"     # Windows PowerShell: $env:ADMIN_PASSWORD="..."
 python aplicacion_web_monitoreo.py
 ```
 
-Abre <http://127.0.0.1:5000> e ingresa con el usuario `admin`. Si no defines `ADMIN_PASSWORD`, la aplicación genera una contraseña aleatoria, la muestra una vez en la consola y la guarda en `.admin_password` (ignorado por git).
+Abre <http://127.0.0.1:5000> e ingresa con:
+
+- **Usuario:** `admin`
+- **Contraseña:** `admin123`
+
+Para cambiarlas sin tocar el código, define las variables `ADMIN_USER` y `ADMIN_PASSWORD` (en Windows PowerShell: `$env:ADMIN_PASSWORD="otra-clave"`).
 
 ## Despliegue en Render
 
@@ -40,7 +44,7 @@ El repositorio incluye `render.yaml`, así que puedes crear el servicio como **B
 - **Build command**: `pip install -r requirements.txt`
 - **Start command**: `gunicorn aplicacion_web_monitoreo:app --workers 2 --threads 4 --timeout 60`
 - **Health check path**: `/health`
-- **Variables**: `ADMIN_PASSWORD`, `SECRET_KEY`, `TRUST_PROXY=1`, `SESSION_COOKIE_SECURE=1`
+- **Variables**: `SECRET_KEY`, `TRUST_PROXY=1`, `SESSION_COOKIE_SECURE=1` y, si quieres otra clave, `ADMIN_PASSWORD`
 
 > El disco de Render en el plan gratuito se borra en cada despliegue o reinicio, y con él el historial. Para conservarlo, agrega un disco persistente y define `DB_PATH=/var/data/monitor.db`.
 
@@ -53,7 +57,7 @@ Todas las opciones se leen de variables de entorno; `.env.example` las lista con
 | Variable | Por defecto | Descripción |
 |---|---|---|
 | `ADMIN_USER` | `admin` | Usuario del panel |
-| `ADMIN_PASSWORD` | aleatoria | Contraseña del panel |
+| `ADMIN_PASSWORD` | `admin123` | Contraseña del panel |
 | `SECRET_KEY` | aleatoria | Firma de las cookies de sesión |
 | `MONITOR_SITES` | google.com, github.com | Sitios iniciales, separados por coma (solo si la base está vacía) |
 | `CHECK_INTERVAL` | `15` | Segundos entre ciclos (mínimo 5) |

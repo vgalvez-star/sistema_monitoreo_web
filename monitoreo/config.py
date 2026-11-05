@@ -1,9 +1,9 @@
 """Configuración de la aplicación a partir de variables de entorno.
 
-Nada sensible queda escrito en el código: la clave de sesión y la contraseña
-del administrador se leen del entorno. Si no existen, se generan una sola vez
-y se guardan junto a la base de datos, para que todos los workers de gunicorn
-compartan los mismos valores.
+Las credenciales por defecto son admin / admin123 y se pueden cambiar con
+ADMIN_USER y ADMIN_PASSWORD. La clave de sesión se lee de SECRET_KEY; si no
+existe, se genera una sola vez y se guarda junto a la base de datos, para que
+todos los workers de gunicorn compartan el mismo valor.
 """
 
 import logging
@@ -13,6 +13,8 @@ import secrets
 log = logging.getLogger(__name__)
 
 SITIOS_POR_DEFECTO = "https://www.google.com,https://www.github.com"
+USUARIO_POR_DEFECTO = "admin"
+CLAVE_POR_DEFECTO = "admin123"
 
 
 def _entero(nombre, defecto, minimo):
@@ -70,7 +72,7 @@ def cargar_config(overrides=None):
             if s.strip()
         ],
         "MONITOR_ACTIVO": _booleano("MONITOR_ENABLED", True),
-        "ADMIN_USER": os.environ.get("ADMIN_USER", "admin"),
+        "ADMIN_USER": os.environ.get("ADMIN_USER") or USUARIO_POR_DEFECTO,
         "TRUST_PROXY": _booleano("TRUST_PROXY", False),
         "SESSION_COOKIE_HTTPONLY": True,
         "SESSION_COOKIE_SAMESITE": "Lax",
@@ -87,19 +89,6 @@ def cargar_config(overrides=None):
         )[0]
 
     if "ADMIN_PASSWORD" not in cfg:
-        clave = os.environ.get("ADMIN_PASSWORD")
-        if not clave:
-            clave, nueva = _secreto_persistente(
-                os.path.join(carpeta, ".admin_password"),
-                lambda: secrets.token_urlsafe(12),
-                "una contraseña de administrador",
-            )
-            if nueva:
-                log.warning(
-                    "ADMIN_PASSWORD no está definida. Contraseña generada para '%s': %s",
-                    cfg["ADMIN_USER"],
-                    clave,
-                )
-        cfg["ADMIN_PASSWORD"] = clave
+        cfg["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD") or CLAVE_POR_DEFECTO
 
     return cfg
